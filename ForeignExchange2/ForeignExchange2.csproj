@@ -32,6 +32,22 @@
     <EmbeddedResource Include="Views\MainView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resource.es.resx">
+      <Generator>NoCodeGeneration</Generator>
+      <LastGenOutput>Resource_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resource.fr.resx">
+      <Generator>NoCodeGeneration</Generator>
+      <LastGenOutput>Resource_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resource.pt.resx">
+      <Generator>NoCodeGeneration</Generator>
+      <LastGenOutput>Resource_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -44,6 +60,12 @@
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Rate.cs" />
+    <Compile Include="Resources\Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ILocalize.cs" />
+    <Compile Include="Helpers\PlatformCulture.cs" />
+    <Compile Include="Helpers\Lenguages.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.ServiceLocation">
@@ -82,6 +104,9 @@
     <Folder Include="Infrastructure\" />
     <Folder Include="Views\" />
     <Folder Include="Models\" />
+    <Folder Include="Resources\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.3.4.267\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.4.267\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
