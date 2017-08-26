@@ -108,6 +108,10 @@
                 VerticalOptions="FillAndExpand"
                 VerticalTextAlignment="Center">
             </Label>
+            <Label
+                HorizontalOptions="Center"
+                Text="{Binding Status, Mode=TwoWay}">
+            </Label>
         </StackLayout>
 	</ContentPage.Content>
 </ContentPage>

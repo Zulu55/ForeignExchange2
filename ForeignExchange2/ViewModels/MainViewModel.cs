@@ -1,8 +1,10 @@
 ﻿namespace ForeignExchange2.ViewModels
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Threading.Tasks;
     using System.Windows.Input;
     using ForeignExchange2.Helpers;
     using GalaSoft.MvvmLight.Command;
@@ -14,22 +16,44 @@
     {
         #region Events
         public event PropertyChangedEventHandler PropertyChanged;
-        #endregion
+		#endregion
 
-        #region Services
-        ApiService apiService;
-        #endregion
+		#region Services
+		ApiService apiService;
+		DialogService dialogService;
+		DataService dataService;
+		#endregion
 
-        #region Attributes
-        bool _isRunning;
+		#region Attributes
+		bool _isRunning;
         bool _isEnabled;
         string _result;
         ObservableCollection<Rate> _rates;
         Rate _sourceRate;
         Rate _targetRate;
+        List<Rate> rates;
+        string _status;
         #endregion
 
         #region Properties
+        public string Status
+        {
+			get
+			{
+				return _status;
+			}
+			set
+			{
+				if (_status != value)
+				{
+					_status = value;
+					PropertyChanged?.Invoke(
+						this,
+						new PropertyChangedEventArgs(nameof(Status)));
+				}
+			}
+		}
+
         public string Amount
         {
             get;
@@ -149,6 +173,9 @@
         public MainViewModel()
         {
             apiService = new ApiService();
+            dataService = new DataService();
+            dialogService = new DialogService();
+
             LoadRates();
         }
         #endregion
@@ -163,26 +190,57 @@
 
             if (!connection.IsSuccess)
             {
+                LoadLocalData();
+			}
+            else
+            {
+                await LoadDataFromAPI();
+            }
+
+            if (rates.Count == 0)
+            {
 				IsRunning = false;
-				Result = connection.Message;
+                IsEnabled = false;
+				Result = "There are not internet connection and not load " +
+                    "previously rates. Please try again with internet " +
+                    "connection.";
+                Status = "No rates loaded.";
                 return;
 			}
 
-            var response = await apiService.GetList<Rate>(
-                "http://apiexchangerates.azurewebsites.net", 
-                "/api/Rates");
-
-            if (!response.IsSuccess)
-            {
-                IsRunning = false;
-				Result = response.Message;
-			}
-
-            Rates = new ObservableCollection<Rate>((List<Rate>)response.Result);
+            Rates = new ObservableCollection<Rate>(rates);
 
             IsRunning = false;
             IsEnabled = true;
 			Result = "Ready to convert!";
+		}
+
+        void LoadLocalData()
+        {
+            rates = dataService.Get<Rate>(false);
+			Status = "Rates loaded from local data.";
+		}
+
+        async Task LoadDataFromAPI()
+        {
+			var url = "http://apiexchangerates.azurewebsites.net"; //Application.Current.Resources["URLAPI"].ToString();
+
+			var response = await apiService.GetList<Rate>(
+				url,
+				"/api/Rates");
+
+			if (!response.IsSuccess)
+			{
+                LoadLocalData();
+                return;
+            } 
+
+			// Storage data local
+			rates = (List<Rate>)response.Result;
+			dataService.DeleteAll<Rate>();
+			dataService.Save(rates);
+
+            Status = "Rates loaded from Internet.";
 		}
         #endregion
 
@@ -215,38 +273,34 @@
         {
             if (string.IsNullOrEmpty(Amount))
             {
-                await Application.Current.MainPage.DisplayAlert(
+                await dialogService.ShowMessage(
                     Lenguages.Error, 
-                    Lenguages.AmountValidation, 
-                    Lenguages.Accept);
+                    Lenguages.AmountValidation);
                 return;
             }
 
             decimal amount = 0;
             if (!decimal.TryParse(Amount, out amount))
             {
-				await Application.Current.MainPage.DisplayAlert(
+                await dialogService.ShowMessage(
 					"Error",
-					"You must enter a numeric value in amount.",
-					"Accept");
+					"You must enter a numeric value in amount.");
 				return;
 			}
 
 			if (SourceRate == null)
 			{
-				await Application.Current.MainPage.DisplayAlert(
+				await dialogService.ShowMessage(
 					"Error",
-					"You must select a source rate.",
-					"Accept");
+					"You must select a source rate.");
 				return;
 			}
 
 			if (TargetRate == null)
 			{
-				await Application.Current.MainPage.DisplayAlert(
+				await dialogService.ShowMessage(
 					"Error",
-					"You must select a target rate.",
-					"Accept");
+					"You must select a target rate.");
 				return;
 			}
 

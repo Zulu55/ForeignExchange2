@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>ForeignExchange2</string>
+	<string>Foreign Exchange</string>
 	<key>CFBundleName</key>
-	<string>ForeignExchange2</string>
+	<string>Foreign Exchange</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.zulusoftware.ForeignExchange2</string>
 	<key>CFBundleShortVersionString</key>

@@ -11,6 +11,9 @@
 
             <!-- Locator -->
             <infra:InstanceLocator x:Key="Locator"/>
+
+            <!-- Parameters -->
+            <x:String x:Key="URLAPI">http://apiexchangerates.azurewebsites.net</x:String>                                
             
         </ResourceDictionary>
             
